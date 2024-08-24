@@ -1,0 +1,26 @@
+{
+   "categories": [
+            {
+                "name": "CNAPP Dashboard",
+                "widgets": [
+                    { "title": "Cloud Accounts", "content": "Details about cloud accounts..." },
+                    { "title": "Cloud Account Risk Assessment", "content": "Risk assessment details..." }
+                ]
+            },
+            {
+                "name": "CSPM Executive Dashboard",
+                "widgets": [
+                    { "title": "Top 5 Namespace", "content": "Details about namespaces..." },
+                    { "title": "Workload Alerts", "content": "Alert details..." }
+                ]
+            },
+            {
+                "name": "Registry Dashboard",
+                "widgets": [
+                    { "title": "Image Risk Assessment", "content": "Risk assessment for images..." },
+                    { "title": "Image Security Issues", "content": "Security issues related to images..." }
+                ]
+            }
+        ]
+  }
+  
