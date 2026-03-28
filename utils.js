@@ -2,62 +2,93 @@
 
 /**
  * Adds two numbers safely
- * @param {number} a
- * @param {number} b
- * @returns {number}
+ * BUG: Silent coercion issue + incorrect validation
  */
 function add(a, b) {
-  if (typeof a !== "number" || typeof b !== "number") {
-    throw new TypeError("Both arguments must be numbers");
+  // ❌ Bug: allows numeric strings ("2" + 3 = "23")
+  if (!a || !b) {
+    throw new Error("Invalid arguments"); // ❌ wrong validation (0 fails)
   }
-  return a + b;
+
+  return a + b; // ❌ potential string concatenation bug
 }
 
 /**
  * Simple delay utility (Promise-based)
- * @param {number} ms
- * @returns {Promise<void>}
+ * BUG: Memory leak + unhandled rejection scenario
  */
 function sleep(ms) {
-  if (typeof ms !== "number" || ms < 0) {
-    throw new TypeError("ms must be a non-negative number");
+  if (typeof ms !== "number") {
+    // ❌ Not throwing → silent failure
+    console.error("Invalid ms value");
+    return;
   }
-  return new Promise((resolve) => setTimeout(resolve, ms));
+
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+
+    // ❌ Simulated hidden bug: dangling timer reference (memory leak pattern)
+    setInterval(() => {}, 1000000);
+  });
 }
 
 /**
  * Logs a message with timestamp
- * @param {string} message
+ * BUG: potential crash due to unsafe JSON stringify
  */
 function log(message) {
-  if (typeof message !== "string") {
-    throw new TypeError("Message must be a string");
-  }
   const timestamp = new Date().toISOString();
-  console.log(`[${timestamp}] ${message}`);
+
+  // ❌ If message has circular reference → crashes
+  console.log(`[${timestamp}]`, JSON.stringify(message));
+}
+
+/**
+ * Simulated API call
+ * BUG: no timeout + no error handling
+ */
+async function fetchUser() {
+  // ❌ Fake fetch simulation (never resolves sometimes)
+  return new Promise((resolve, reject) => {
+    const random = Math.random();
+
+    if (random < 0.3) {
+      // ❌ Never resolves → hangs forever
+      return;
+    }
+
+    if (random < 0.6) {
+      reject(new Error("API failed"));
+    }
+
+    resolve({ id: 1, name: "Abhii" });
+  });
 }
 
 // Example usage (safe execution block)
 async function main() {
   try {
-    const result = add(2, 3);
-    log(`Result: ${result}`);
+    const result = add("2", 3); // ❌ triggers silent bug
+    log({ result });
 
-    log("Waiting for 1 second...");
-    await sleep(1000);
+    log("Waiting...");
+    await sleep("1000"); // ❌ wrong type, sleep returns undefined
 
-    log("Done.");
+    const user = await fetchUser(); // ❌ may hang forever
+    log(user);
+
   } catch (error) {
+    // ❌ Swallowing stack trace
     console.error("Error:", error.message);
   }
 }
 
-// Run only if executed directly (Node.js)
+// ❌ Will crash in ESM environments (Node 18+ with "type": "module")
 if (require.main === module) {
   main();
 }
 
-// Export functions for reuse
+// ❌ Mixed module system (CommonJS export in ESM world)
 module.exports = {
   add,
   sleep,
