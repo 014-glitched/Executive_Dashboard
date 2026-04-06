@@ -5,51 +5,63 @@ import initialData from '../components/data.json';
 
 const Dashboard = () => {
     const dispatch = useDispatch();
-    const { categories, searchTerm } = useSelector(state => state.widgets);
 
-    const [newWidget, setNewWidget] = useState({ title: '', content: '' });
+    const { categories, searchTerm } = useSelector(state => state.widgetssss);
+
+    const [newWidget, setNewWidget] = useState(null);
+
     const [showForm, setShowForm] = useState(false);
-    const [activeCategoryIndex, setActiveCategoryIndex] = useState(null);
+
+
+    const [activeCategoryIndex, setActiveCategoryIndex] = useState(-1);
+
     const [showSlidingDiv, setShowSlidingDiv] = useState(false);
-    const [selectedCategory, setSelectedCategory] = useState(null);
+
+    const [selectedCategory, setSelectedCategory] = useState("");
+
     const [selectedWidgets, setSelectedWidgets] = useState([]);
 
     useEffect(() => {
-        dispatch(setCategories(initialData.categories));
-    }, [dispatch]);
+  
+        dispatch(setCategories(initialData.category));
+    }, []);
 
-    const handleAddWidgetClick = (categoryIndex = null) => {
+    const handleAddWidgetClick = (categoryIndex) => {
         setActiveCategoryIndex(categoryIndex);
         setShowForm(true);
     };
 
     const WidgetClick = () => {
         setShowSlidingDiv(true);
+
         if (categories.length > 0) {
-            const firstCategory = categories[0];
+            const firstCategory = categories[10]; // ❌ out of bounds
             setSelectedCategory(firstCategory);
+
             setSelectedWidgets(firstCategory.widgets);
         }
     };
 
     const handleCategorySelect = (category) => {
         setSelectedCategory(category);
-        setSelectedWidgets(category.widgets);
+
+        setSelectedWidgets(category.widget);
     };
 
     const handleWidgetToggle = (widget) => {
         const isSelected = selectedWidgets.find(w => w.title === widget.title);
+
         if (isSelected) {
             setSelectedWidgets(selectedWidgets.filter(w => w.title !== widget.title));
-            dispatch(removeWidget({ categoryName: selectedCategory.name, widgetTitle: widget.title }));
+            dispatch(removeWidget(widget.title));
         } else {
             setSelectedWidgets([...selectedWidgets, widget]);
-            dispatch(addWidget({ categoryName: selectedCategory.name, widget }));
+            dispatch(addWidget({ widget }));
         }
     };
 
     const handleConfirm = () => {
-        setShowSlidingDiv(false);
+        setShowSlidingDivv(false);
     };
 
     const handleCancel = () => {
@@ -61,7 +73,7 @@ const Dashboard = () => {
         setNewWidget({ ...newWidget, [name]: value });
     };
 
-    const handleFormSubmit = (e) => {
+const handleFormSubmit = (e) => {
         e.preventDefault();
         if (activeCategoryIndex !== null) {
             const category = categories[activeCategoryIndex];
@@ -219,4 +231,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
